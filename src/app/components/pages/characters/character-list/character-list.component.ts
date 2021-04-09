@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Character } from '@src/shared/interface/character.interface';
 import { DataService } from '@src/shared/services/data.service';
+import { LocalStorageService } from '@src/shared/services/localStorage.service';
 import { take, tap } from 'rxjs/operators';
 
 
@@ -11,9 +12,9 @@ import { take, tap } from 'rxjs/operators';
 })
 
 export class CharacterListComponent implements OnInit {
-   personajes:Character[]=[]
+   characters:Character[]=[]
 
-  constructor(private dataService:DataService) {}
+  constructor(private dataService:DataService, ) {}
 
   ngOnInit(): void {
     this.getChacaters()
@@ -24,8 +25,9 @@ export class CharacterListComponent implements OnInit {
       take(1),
       tap(({data}:any)=>{
          const {characters} = data
-         this.personajes = characters.results
-         console.log(this.personajes)
+         this.characters = characters.results
+         console.log(this.characters)
+         this.dataService.parseCharacter(characters.results)
       })
     ).subscribe()
   }

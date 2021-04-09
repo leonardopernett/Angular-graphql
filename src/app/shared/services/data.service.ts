@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import {Apollo, gql} from 'apollo-angular'
+import { Character } from '../interface/character.interface';
+import { LocalStorageService } from './localStorage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  constructor(private apollo:Apollo) { }
+  constructor(private apollo:Apollo, private localStorageService:LocalStorageService) { }
 
   getData(){
    return this.apollo.watchQuery({
@@ -53,4 +55,14 @@ export class DataService {
 
 
  }
+
+  parseCharacter(characters:Character[]){
+          const current = this.localStorageService.localStorageFavoriteCharacter();
+           const newData = characters.map(character=>{
+           const found = !!current.find(fav=> fav.id === character.id)
+
+           return {...character, isfavorite:found}
+     })
+     this.localStorageService.charactersFavorites = newData
+  }
 }
