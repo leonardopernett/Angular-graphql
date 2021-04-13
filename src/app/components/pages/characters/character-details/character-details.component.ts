@@ -10,7 +10,7 @@ import { Character } from '@src/shared/interface/character.interface';
 export class CharacterDetailsComponent implements OnInit {
    character:Character;
 
-  constructor(private activeRouter:ActivatedRoute, private router:Router) {
+  constructor(private router:Router) {
       this.character = this.router.getCurrentNavigation().extras.state.value
    }
 

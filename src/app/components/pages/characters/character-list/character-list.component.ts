@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, HostListener, OnInit, ElementRef, Inject } from '@angular/core';
 import { Character } from '@src/shared/interface/character.interface';
 import { DataService } from '@src/shared/services/data.service';
-import { LocalStorageService } from '@src/shared/services/localStorage.service';
-import { take, tap } from 'rxjs/operators';
+import { pluck, take, tap, withLatestFrom } from 'rxjs/operators';
 
 
 @Component({
@@ -13,8 +13,13 @@ import { take, tap } from 'rxjs/operators';
 
 export class CharacterListComponent implements OnInit {
    characters:Character[]=[]
+   verify:boolean = false
+   pageActual:number= 2
 
-  constructor(private dataService:DataService, ) {}
+  constructor(
+    @Inject(DOCUMENT) private document:Document,
+    private dataService:DataService,
+    private element:ElementRef ) {}
 
   ngOnInit(): void {
     this.getChacaters()
@@ -26,11 +31,33 @@ export class CharacterListComponent implements OnInit {
       tap(({data}:any)=>{
          const {characters} = data
          this.characters = characters.results
-         console.log(this.characters)
+     
          this.dataService.parseCharacter(characters.results)
       })
     ).subscribe()
   }
+  
+  @HostListener('window:scroll')
+  onwindowScroll(){
+    this.document.documentElement.scrollTop  > 500 
+      ? this.verify =  true
+      : this.verify =  false
+  }
+   onScrollTop(){
+    this.document.documentElement.scrollIntoView({block:'start',behavior:'smooth'})
+   }
 
+   onScroll(){
+     this.pageActual++
+     this.dataService.getDataByPAge(this.pageActual+1).pipe(
+       take(1),
+       pluck('data','characters', 'results'),
+       tap((res:any)=>{
+         this.characters =[...this.characters, ...res]
+         console.log(res)
+         console.log(this.pageActual)
 
+       })
+     ).subscribe()
+   }
 }

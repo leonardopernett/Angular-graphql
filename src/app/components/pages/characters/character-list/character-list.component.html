@@ -1,3 +1,13 @@
-<section class="character__list">
+<section class="character__list"  
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="5000"
+    (scrolled)="onScroll()"
+
+>
+
   <app-character-card *ngFor="let character of characters" [character]="character"></app-character-card>
+  <button  class="btn" *ngIf="verify" id="btn" (click)="onScrollTop()" >
+       ⬆️
+  </button>
 </section>

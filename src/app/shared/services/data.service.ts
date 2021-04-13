@@ -56,6 +56,27 @@ export class DataService {
 
  }
 
+ getDataByPAge(page:number){
+     return  this.apollo.watchQuery({
+        query:gql`
+          {
+              characters(page:${page}){
+                results{
+                    id
+                    gender
+                    status
+                    species
+                    name
+                    image
+        
+              }
+            }
+          }
+        
+        `
+     }).valueChanges
+ }
+
   parseCharacter(characters:Character[]){
           const current = this.localStorageService.localStorageFavoriteCharacter();
            const newData = characters.map(character=>{
